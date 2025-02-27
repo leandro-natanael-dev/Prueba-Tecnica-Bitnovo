@@ -6,12 +6,11 @@ import store from './src/store/store';
 
 const App = () => {
   return (
-      <Provider store={store}>
-        <NavigationContainer>
-          <AppNavigation />
-        </NavigationContainer>
-      </Provider>
-
+    <Provider store={store}>
+      <NavigationContainer >
+        <AppNavigation />
+      </NavigationContainer>
+    </Provider>
   );
 };
 
