@@ -1,16 +1,17 @@
-
+import {Dispatch} from '@reduxjs/toolkit';
+import {setPaymentData} from '../store/slice/paymentSlice';
 
 const paymentService = async (
-  selectFiat: any,
-  selectConcept: string,
   selectAmount: number,
+  selectConcept: string,
+  selectFiat: string,
+  dispatch: Dispatch,
 ) => {
   try {
     const formData = new FormData();
     formData.append('expected_output_amount', selectAmount);
     formData.append('reference', selectConcept);
     formData.append('fiat', selectFiat);
-
     const response = await fetch(
       'https://payments.pre-bnvo.com/api/v1/orders/',
       {
@@ -22,9 +23,13 @@ const paymentService = async (
       },
     );
     const data = await response.json();
-    console.log(data);
+
+    if (data) {
+      dispatch({type: 'websocket/connect', payload: data});
+      dispatch(setPaymentData(data));
+    }
   } catch (error) {
-    throw new Error(error.message);
+    console.error(error);
   }
 };
 

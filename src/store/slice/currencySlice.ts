@@ -19,7 +19,7 @@ const initialState: CurrencyState = {
   selectedCurrency: fiatCurrencies[0],
 };
 
-export const currenciesSlice = createSlice({
+const currenciesSlice = createSlice({
   name: 'currency',
   initialState,
   reducers: {

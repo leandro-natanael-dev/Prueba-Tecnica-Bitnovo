@@ -14,7 +14,7 @@ const initialState: ConceptSlice = {
  * @param {PayloadAction<string>} action - Accion que contiene el nuevo concepto
  */
 
-export const conceptSlice = createSlice({
+const conceptSlice = createSlice({
   name: 'concept',
   initialState,
   reducers: {

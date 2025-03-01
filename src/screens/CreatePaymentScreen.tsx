@@ -7,39 +7,39 @@ import InputAmount from '../components/payment/InputAmount';
 import ConceptInput from '../components/payment/ConceptInput';
 import IconModal from '../components/payment/IconModal';
 import paymentService from '../api/paymentService';
-import {useSelector} from 'react-redux';
 import {RootState} from '../store/store';
+import {useSelector, useDispatch} from 'react-redux';
 import useSelectedCurrency from '../hooks/useSelectedCurrency';
-/**
- * Pantalla para crear un pago
- * Permite ingresar un monto, seleccionar moneda y añadir un concepto.
- *
- * @returns {React.FC} Para la creacion de un pago
- *
- */
+import {SafeAreaView} from 'react-native-safe-area-context';
 
 const CreatePaymentScreen = () => {
   const [modalVisible, setModalVisible] = useState<boolean>(false);
   const [isAmountSet, setIsAmount] = useState<boolean>(false);
+
   const navigation = useNavigation<NavigationProp<RootStackParamList>>();
+  const dispatch = useDispatch();
   const selectFiat = useSelectedCurrency();
   const selectConcept = useSelector(
     (state: RootState) => state.concept.concept,
   );
   const selectAmount = useSelector((state: RootState) => state.amount.amount);
-  const toggleModal = useCallback(() => {
-    setModalVisible(prev => !prev);
-  }, []);
 
   const handleButtonPayment = async () => {
     try {
-      await paymentService(selectAmount, selectConcept, selectFiat);
+      await paymentService(
+        selectAmount,
+        selectConcept,
+        selectFiat.symbol,
+        dispatch,
+      );
+      navigation.navigate('SharePayment');
     } catch (error) {
       console.error(error);
-    } finally {
-      navigation.navigate('PaymentComplete');
     }
   };
+  const toggleModal = useCallback(() => {
+    setModalVisible(prev => !prev);
+  }, []);
 
   const contButtonDisable = [
     styles.containerButton,
@@ -51,7 +51,7 @@ const CreatePaymentScreen = () => {
   ];
 
   return (
-    <View style={styles.container}>
+    <SafeAreaView style={styles.container}>
       <View style={styles.header}>
         <View style={styles.spacer} />
         <View style={styles.titleContainer}>
@@ -61,7 +61,12 @@ const CreatePaymentScreen = () => {
       </View>
       <View style={styles.content}>
         <View style={styles.amountContainer}>
-          <InputAmount isAmountSet={isAmountSet} setIsAmount={setIsAmount} />
+          <InputAmount
+            isAmountSet={isAmountSet}
+            setIsAmount={setIsAmount}
+            editable={true}
+            styles={stylesInputAmount}
+          />
         </View>
         <View style={styles.containerConcept}>
           <ConceptInput />
@@ -76,7 +81,7 @@ const CreatePaymentScreen = () => {
       <Modal animationType="slide" transparent={true} visible={modalVisible}>
         <CurrencyModal closeModal={toggleModal} />
       </Modal>
-    </View>
+    </SafeAreaView>
   );
 };
 
@@ -89,10 +94,15 @@ const styles = StyleSheet.create({
   },
   header: {
     width: '100%',
-    height: 120,
     flexDirection: 'row',
     alignItems: 'flex-end',
     paddingBottom: 20,
+    shadowColor: '#28293D',
+    shadowOffset: {width: 0, height: 0},
+    shadowOpacity: 0.08,
+    shadowRadius: 1,
+    elevation: 1,
+    backgroundColor: 'white',
   },
   spacer: {
     flex: 1,
@@ -139,3 +149,23 @@ const styles = StyleSheet.create({
     color: '#FFFFFF',
   },
 });
+
+const stylesInputAmount = {
+  containerAmount: {
+    flexDirection: 'row',
+  },
+  amountPayment: {
+    fontFamily: 'Mulish-Bold',
+    fontSize: 40,
+    lineHeight: 50,
+    textAlign: 'center',
+    textAlignVertical: 'center',
+    paddingVertical: 5,
+  },
+  selected: {
+    color: '#035AC5',
+  },
+  unselected: {
+    color: '#C0CCDA',
+  },
+};

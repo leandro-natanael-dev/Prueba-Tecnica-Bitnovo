@@ -1,4 +1,4 @@
-import React, {SetStateAction} from 'react';
+import React, {SetStateAction, useState} from 'react';
 import {View, TextInput, StyleSheet, Text} from 'react-native';
 import {setAmount} from '../../store/slice/amountSlice';
 import useSelectedCurrency from '../../hooks/useSelectedCurrency';
@@ -7,49 +7,65 @@ import {RootState} from '../../store/store';
 import {Dispatch} from 'react';
 
 interface InputAmountProps {
-  isAmountSet: boolean;
-  setIsAmount: Dispatch<SetStateAction<boolean>>;
+  isAmountSet?: boolean;
+  editable: boolean;
+  setIsAmount?: Dispatch<SetStateAction<boolean>>;
+  styles: any;
 }
 
 const InputAmount: React.FC<InputAmountProps> = ({
   isAmountSet,
   setIsAmount,
+  editable,
+  styles,
 }) => {
   const paymentAmount = useSelector((state: RootState) => state.amount.amount);
   const selectedCurrency = useSelectedCurrency();
   const dispatch = useDispatch();
+  const [rawValue, setRawValue] = useState(
+    paymentAmount ? Math.round(parseFloat(paymentAmount) * 100).toString() : '',
+  );
 
-  const handleInputAmount = (input: string) => {
-    const amount = parseFloat(input);
-    console.log(amount);
-    if (amount > 0) {
-      dispatch(setAmount(input));
-      setIsAmount(true);
+  const handleInputAmount = (text: string) => {
+    const numericValue = text.replace(/\D/g, '');
+    if (numericValue.length > 9) return;
+
+    setRawValue(numericValue);
+    const formattedValue = parseInt(numericValue, 10) / 100 || 0;
+    dispatch(setAmount(formattedValue.toFixed(2)));
+    setIsAmount(formattedValue > 0);
+  };
+  const formattedDisplay = (parseInt(rawValue, 10) / 100 || 0).toFixed(2);
+
+  const selectEdition = () => {
+    if (editable) {
+      return (
+        <TextInput
+          style={textStyle}
+          placeholder={'0.00'}
+          onChangeText={handleInputAmount}
+          value={formattedDisplay}
+          keyboardType="numeric"
+          selectionColor={isAmountSet ? '#035AC5' : '#C0CCDA'}
+          onFocus={() => setIsAmount(true)}
+        />
+      );
     } else {
-      dispatch(setAmount('0.00'));
-      setIsAmount(false);
+      return <Text style={textStyle}>{formattedDisplay}</Text>;
     }
   };
 
   const textStyle = [
-    styles.amoutPayment,
+    styles.amountPayment,
     isAmountSet ? styles.selected : styles.unselected,
   ];
 
   return (
-    <View style={styles.containerAmout}>
+    <View style={styles.containerAmount}>
       {selectedCurrency?.prefixPosition === 'before' && (
         <Text style={textStyle}>{selectedCurrency.prefix}</Text>
       )}
-      <TextInput
-        style={textStyle}
-        placeholder={'0.00'}
-        onChangeText={handleInputAmount}
-        value={paymentAmount}
-        keyboardType="decimal-pad"
-        selectionColor={isAmountSet ? '#035AC5' : '#C0CCDA'}
-        onFocus={() => setIsAmount(true)}
-      />
+      {selectEdition()}
       {selectedCurrency?.prefixPosition === 'after' && (
         <Text style={textStyle}>{selectedCurrency.prefix}</Text>
       )}
@@ -59,22 +75,4 @@ const InputAmount: React.FC<InputAmountProps> = ({
 
 export default InputAmount;
 
-const styles = StyleSheet.create({
-  containerAmout: {
-    flexDirection: 'row',
-  },
-  amoutPayment: {
-    fontFamily: 'Mulish-Bold',
-    fontSize: 40,
-    lineHeight: 50,
-    textAlign: 'center',
-    textAlignVertical: 'center',
-    paddingVertical: 5,
-  },
-  selected: {
-    color: '#035AC5',
-  },
-  unselected: {
-    color: '#C0CCDA',
-  },
-});
+const styles = StyleSheet.create({styles});

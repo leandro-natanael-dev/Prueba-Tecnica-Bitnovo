@@ -14,7 +14,7 @@ const initialState: AmountState = {
  * @param {PayloadAction<string>} action - Acción que contiene el nuevo monto.
  */
 
-export const amountSlice = createSlice({
+const amountSlice = createSlice({
   name: 'amount',
   initialState,
   reducers: {
