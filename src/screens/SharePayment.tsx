@@ -75,7 +75,7 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between',
   },
   containerNewRequest: {
-    marginTop: 40,
+    marginTop: 225,
     flexDirection: 'row',
     justifyContent: 'center',
     alignItems: 'center',

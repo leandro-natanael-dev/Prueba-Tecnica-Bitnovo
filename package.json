@@ -17,7 +17,6 @@
     "iconsax-react-native": "^0.0.8",
     "react": "19.0.0",
     "react-native": "0.78.0",
-    "react-native-confetti-cannon": "^1.5.2",
     "react-native-mail": "^6.1.1",
     "react-native-qrcode-svg": "^6.3.15",
     "react-native-safe-area-context": "^5.2.0",

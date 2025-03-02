@@ -7,6 +7,7 @@ import {InfoCircle, ArrowLeft} from 'iconsax-react-native';
 import {NavigationProp, useNavigation} from '@react-navigation/native';
 import {RootStackParamList} from '../navigation/AppNavigation';
 import InputAmount from '../components/payment/InputAmount';
+import {SafeAreaView} from 'react-native-safe-area-context';
 
 const QRScreen = () => {
   const navigation = useNavigation<NavigationProp<RootStackParamList>>();
@@ -18,7 +19,7 @@ const QRScreen = () => {
     navigation.navigate('SharePayment');
   };
   return (
-    <View style={styles.container}>
+    <SafeAreaView style={styles.container}>
       <View style={styles.header}>
         <TouchableOpacity
           style={styles.cicleArrow}
@@ -45,7 +46,7 @@ const QRScreen = () => {
           Esta pantalla se actualizará automáticamente.
         </Text>
       </View>
-    </View>
+    </SafeAreaView>
   );
 };
 
